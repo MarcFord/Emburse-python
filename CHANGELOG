@@ -1,2 +1,9 @@
-=== 0.0.1 2017-05-01
+=== 0.1.1 2017-05-01
+* Project structure setup
+* Style Guide added
+* AUTHORS added
+* Added tox
+* Package Distribution files added
+
+=== 0.1.0 2017-05-01
 * Project Start
