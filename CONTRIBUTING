@@ -1,0 +1,54 @@
+I Welcome anyone to contribute to this project!
+
+CONTRIBUTING
+=============
+Please read and follow the style guide!
+
+    1.  Fork the repo on GitHub
+    2.  Clone the project to your own machine
+    3.  Commit changes to your own branch
+    4.  Push your work back up to your fork
+    5.  Submit a Pull request so that we can review your changes. Please make sure to add yourself to AUTHORS and update
+        the CHANGELOG
+
+  NOTE: Be sure to merge the latest from "upstream" before making a pull request!
+
+STYLE GUIDE
+===========
+    This project follows the PEP8, http://www.python.org/dev/peps/pep-0008/, style guide for Python.
+
+    *   For non-trivial changes, please update the CHANGELOG file. If your changes alter existing behavior, please
+        document this.
+    *   New features should be documented. Include examples and use cases where appropriate. If possible, include a
+        sample that is displayed in the generated output.
+    *   Add appropriate unit tests.
+
+    Naming Conventions
+    ==================
+        Class names: CamelCase, with acronyms kept uppercase (HTTPWriter and not HttpWriter)
+        Variable names: lowercase_with_underscores
+        Method and function names: lowercase_with_underscores
+        Constants: UPPERCASE_WITH_UNDERSCORES
+        precompiled regular expressions: name_re
+        Protected members are prefixed with a single underscore.
+
+        On classes with keywords, trailing underscores are appended. Clashes with builtins are allowed and must not be
+        resolved by appending an underline to the variable name. If the function needs to access a shadowed builtin, rebind
+        the builtin to a different name instead.
+
+        Function and method arguments:
+        class methods: cls as first parameter
+        instance methods: self as first parameter
+        lambdas for properties might have the first parameter replaced with x like in
+        display_name = property(lambda x: x.real_name or x.username)
+
+    Docstrings
+    ==========
+        All docstrings are to be formatted to work with Sphinx. Depending on the number of lines in the docstring, they
+        are laid out differently. If it’s just one line, the closing triple quote is on the same line as the opening,
+        otherwise the opening quote and the triple quote that closes the string are on its own line.
+
+    Deprecating a Feature
+    =====================
+        If a feature has been improved or modified in a backwards-incompatible way, the old feature or behavior will be
+        deprecated.
