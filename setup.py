@@ -12,20 +12,22 @@ try:
 except ImportError:
     from distutils.command.build_py import build_py
 
-path, script = os.path.split(sys.argv[0])
-os.chdir(os.path.abspath(path))
+here = os.path.abspath(os.path.dirname(__file__))
+os.chdir(os.path.abspath(here))
 
 install_requires = ['python-dateutil >= 2.6.0']
 
 if sys.version_info < (2, 6):
-    warnings.warn('Python 2.5 is not supported by the Emburse Client', DeprecationWarning)
+    warnings.warn(
+        'Python 2.5 is not supported by the Emburse Client', DeprecationWarning)
+
     install_requires.append('requests >= 0.8.8, < 0.10.1')
     install_requires.append('ssl')
 else:
     install_requires.append('requests >= 0.8.8')
 
 
-with open(os.path.join(path, 'DESCRIPTION.rst')) as f:
+with open(os.path.join(here, 'DESCRIPTION.rst')) as f:
     long_description = f.read()
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'emburse'))
@@ -53,12 +55,7 @@ setup(
         "License :: OSI Approved :: GPLv3 License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: Implementation :: PyPy",
