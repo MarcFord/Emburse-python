@@ -14,8 +14,7 @@ addons:
       - librtmp-dev
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install 'pytest == 2.7.2'; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.5' ]]; then pip install pytest; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == '3.6' ]]; then pip install pytest; fi
+  - if [[ $TRAVIS_PYTHON_VERSION != '2.7' ]]; then pip install pytest; fi
   - pip install pytest-mock pycurl flake8 tox-travis
   - python setup.py clean --all
   - python setup.py install
