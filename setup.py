@@ -46,8 +46,8 @@ setup(
     packages=['emburse'],
     package_data={'emburse': ['data/ca-certificates.crt']},
     install_requires=install_requires,
-    test_suite='tests.all',
-    tests_require=['unittest2', 'mock'],
+    test_suite='tests',
+    tests_require=['pytest', 'pytest-mock'],
     use_2to3=True,
     classifiers=[
         "Development Status :: 4 - Beta",
