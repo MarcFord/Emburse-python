@@ -13,7 +13,6 @@ python:
 cache:
   apt: true
   pip: false
-env: PYCURL_SSL_LIBRARY=gnutls
 addons:
   apt:
     packages:
