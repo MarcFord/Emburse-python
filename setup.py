@@ -15,7 +15,7 @@ except ImportError:
 here = os.path.abspath(os.path.dirname(__file__))
 os.chdir(os.path.abspath(here))
 
-install_requires = ['python-dateutil >= 2.6.0']
+install_requires = ['python-dateutil >= 2.6.0', 'pytz']
 
 if sys.version_info < (2, 6):
     warnings.warn(

@@ -15,7 +15,7 @@ addons:
 install:
   - if [[ $TRAVIS_PYTHON_VERSION == '2.7' ]]; then pip install 'pytest == 2.7.2'; fi
   - if [[ $TRAVIS_PYTHON_VERSION != '2.7' ]]; then pip install pytest; fi
-  - pip install pytest-mock pycurl flake8 tox-travis
+  - pip install pytest-mock pycurl flake8 tox-travis pytz python-dateutil
   - python setup.py clean --all
   - python setup.py install
 script:
