@@ -23,6 +23,16 @@ except ImportError:
     from cgi import parse_qsl
 
 try:
+    import urlparse
+except ImportError:
+    import urllib.parse as urlparse
+
+try:
+    from urllib import quote_plus
+except ImportError:
+    from urllib.parse import quote as quote_plus
+
+try:
     import json
 except ImportError:
     json = None

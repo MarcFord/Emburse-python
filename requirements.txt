@@ -11,6 +11,7 @@ pyflakes==1.5.0
 pytest==3.0.7
 pytest-mock==1.6.0
 python-dateutil==2.6.0
+pytz==2017.2
 requests==2.13.0
 requests-toolbelt==0.7.1
 six==1.10.0
