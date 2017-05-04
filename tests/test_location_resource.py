@@ -54,105 +54,101 @@ def location_list():
     return locations
 
 
-def test_label_details(mocker, emburse_client, location_dict):
-    assert False, 'Test needs to be updated!'
-    label = emburse_client.Label
-    assert isinstance(label, Label)
-    label.id = location_dict.get('id')
-    mocker.patch.object(label, 'make_request')
-    label.make_request.return_value = json.dumps(location_dict)
-    label = label.refresh()
-    assert isinstance(label, Label)
-    assert isinstance(label.created_at, datetime.datetime)
-    for key, value in location_dict.iteritems():
-        assert hasattr(label, key)
+def test_location_details(mocker, emburse_client, location_dict):
+    location = emburse_client.Location
+    assert isinstance(location, Location)
+    location.id = location_dict.get('id')
+    mocker.patch.object(location, 'make_request')
+    location.make_request.return_value = json.dumps(location_dict)
+    location = location.refresh()
+    assert isinstance(location, Location)
+    assert isinstance(location.created_at, datetime.datetime)
+    for key, value in location_dict.items():
+        assert hasattr(location, key)
         if isinstance(value, dict):
-            obj = getattr(label, key)
-            for sub_key, sub_value in value.iteritems():
+            obj = getattr(location, key)
+            for sub_key, sub_value in value.items():
                 assert hasattr(obj, sub_key)
                 assert getattr(obj, sub_key) == sub_value
         elif key == 'created_at':
-            assert getattr(label, key) == date_parser(value)
+            assert getattr(location, key) == date_parser(value)
         else:
-            assert getattr(label, key) == value
+            assert getattr(location, key) == value
 
 
-def test_label_list(mocker, emburse_client, location_list):
-    assert False, 'Test needs to be updated!'
-    label = emburse_client.Label
-    assert isinstance(label, Label)
-    mocker.patch.object(label, 'make_request')
-    label.make_request.return_value = json.dumps({'labels': location_list})
-    labels = label.list()
-    assert isinstance(labels, list)
-    assert len(labels) == 10
-    for lab in labels:
-        assert isinstance(lab, Label)
-        lab_dict = list(filter(lambda a: a.get('id') == lab.id, location_list)).pop()
-        for key, value in lab_dict.iteritems():
-            assert hasattr(lab, key)
+def test_location_list(mocker, emburse_client, location_list):
+    location = emburse_client.Location
+    assert isinstance(location, Location)
+    mocker.patch.object(location, 'make_request')
+    location.make_request.return_value = json.dumps({'locations': location_list})
+    locations = location.list()
+    assert isinstance(locations, list)
+    assert len(locations) == 10
+    for loc in locations:
+        assert isinstance(loc, Location)
+        lab_dict = list(filter(lambda a: a.get('id') == loc.id, location_list)).pop()
+        for key, value in lab_dict.items():
+            assert hasattr(loc, key)
             if isinstance(value, dict):
-                obj = getattr(lab, key)
-                for sub_key, sub_value in value.iteritems():
+                obj = getattr(loc, key)
+                for sub_key, sub_value in value.items():
                     assert hasattr(obj, sub_key)
                     assert getattr(obj, sub_key) == sub_value
             elif key == 'created_at':
-                assert getattr(lab, key) == date_parser(value)
+                assert getattr(loc, key) == date_parser(value)
             else:
-                assert getattr(lab, key) == value
+                assert getattr(loc, key) == value
 
 
-def test_label_update(mocker, emburse_client, location_dict):
-    assert False, 'Test needs to be updated!'
-    lab_data = location_dict
-    lab_update_data = {"name": "Droid Repair Fleet #{0}".format(randint(1000, 9999))}
-    updated_lab_dict = lab_data
-    updated_lab_dict['name'] = lab_update_data['name']
-    label = Label(
+def test_location_update(mocker, emburse_client, location_dict):
+    loc_data = location_dict
+    loc_update_data = {"name": "Droid Repair Fleet #{0}".format(randint(1000, 9999))}
+    updated_loc_dict = loc_data
+    updated_loc_dict['name'] = loc_update_data['name']
+    location = Location(
         auth_token='Testing123',
-        **lab_data
+        **loc_data
     )
-    mocker.patch.object(label, 'make_request')
-    label.make_request.return_value = json.dumps(updated_lab_dict)
-    label.update(**lab_update_data)
-    assert isinstance(label, Label)
-    assert isinstance(label.created_at, datetime.datetime)
-    for key, value in updated_lab_dict.iteritems():
-        assert hasattr(label, key)
+    mocker.patch.object(location, 'make_request')
+    location.make_request.return_value = json.dumps(updated_loc_dict)
+    location.update(**loc_update_data)
+    assert isinstance(location, Location)
+    assert isinstance(location.created_at, datetime.datetime)
+    for key, value in updated_loc_dict.items():
+        assert hasattr(location, key)
         if isinstance(value, dict):
-            obj = getattr(label, key)
-            for sub_key, sub_value in value.iteritems():
+            obj = getattr(location, key)
+            for sub_key, sub_value in value.items():
                 assert hasattr(obj, sub_key)
                 assert getattr(obj, sub_key) == sub_value
         elif key == 'created_at':
-            assert getattr(label, key) == date_parser(value)
+            assert getattr(location, key) == date_parser(value)
         else:
-            assert getattr(label, key) == value
+            assert getattr(location, key) == value
 
 
-def test_label_create(mocker, emburse_client):
-    assert False, 'Test needs to be updated!'
-    label_id = str(uuid.uuid4())
+def test_location_create(mocker, emburse_client):
+    location_id = str(uuid.uuid4())
     new_label = {
-        "id": label_id,
-        "url": "https://api.emburse.com/v1/labels/{0}".format(label_id),
-        "name": "Storm Trooper #{0}".format(randint(1000, 9999)),
+        "id": location_id,
+        "url": "https://api.emburse.com/v1/locations/{0}".format(location_id),
+        "name": "Tatoonie",
         "created_at": datetime.datetime.utcnow().isoformat()
     }
-    label = emburse_client.Label
-    mocker.patch.object(label, 'make_request')
-    label.make_request.return_value = json.dumps(new_label)
-    label = label.create(**{'name': new_label['name']})
-    assert isinstance(label, Label)
-    assert isinstance(label.created_at, datetime.datetime)
-    for key, value in new_label.iteritems():
-        assert hasattr(label, key)
+    location = emburse_client.Location
+    mocker.patch.object(location, 'make_request')
+    location.make_request.return_value = json.dumps(new_label)
+    location = location.create(**{'name': new_label['name']})
+    assert isinstance(location, Location)
+    assert isinstance(location.created_at, datetime.datetime)
+    for key, value in new_label.items():
+        assert hasattr(location, key)
         if isinstance(value, dict):
-            obj = getattr(label, key)
-            for sub_key, sub_value in value.iteritems():
+            obj = getattr(location, key)
+            for sub_key, sub_value in value.items():
                 assert hasattr(obj, sub_key)
                 assert getattr(obj, sub_key) == sub_value
         elif key == 'created_at':
-            assert getattr(label, key) == date_parser(value)
+            assert getattr(location, key) == date_parser(value)
         else:
-            assert getattr(label, key) == value
+            assert getattr(location, key) == value
