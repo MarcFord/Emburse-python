@@ -536,7 +536,27 @@ class Account(ListableAPIResource):
     API DOC: https://www.emburse.com/api/v1/docs#account
     
     """
-    pass
+
+    @property
+    def Statement(self):
+        """
+        Statement Resource
+        
+        Returns:
+            emburse.resource.Statement
+        
+        Raises:
+            emburse.errors.EmburseValueError, if account id is has not been set.
+
+        """
+        if not self.id:
+            raise error.EmburseValueError(
+                'Account ID must be set before using the statement property!'
+            )
+        return Statement(
+            auth_token=self.auth_token,
+            account_id=self.id
+        )
 
 
 class Allowance(ListableAPIResource):
