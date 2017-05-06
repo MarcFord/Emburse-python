@@ -1,6 +1,6 @@
 import re
 from dateutil.parser import parse as date_parser
-
+import datetime
 import emburse.util as util
 import emburse.errors as error
 from emburse.requestor import Requestor
@@ -192,7 +192,7 @@ class APIResource(EmburseObject):
         """
         return self.refresh_from(
             util.json.loads(
-                self.make_request(method='GET', url=self.instance_url()))
+                self.make_request(method='GET', url_=self.instance_url()))
         )
 
     def refresh_from(self, resp):
@@ -249,7 +249,7 @@ class APIResource(EmburseObject):
         extn = util.quote_plus(id_)
         return "{0}/{1}".format(base, extn)
 
-    def make_request(self, method, url, **params):
+    def make_request(self, method, url_, **params):
         """
         Make Request, method to send requests to the given api end point with
         given parameters. 
@@ -257,7 +257,7 @@ class APIResource(EmburseObject):
         Args:
             method (str): HTTP Method to use when making a request to the API.
             
-            url (str): API endpoint URL for request.
+            url_ (str): API endpoint URL for request.
             
             **params: The data to send to the API endpoint
         
@@ -267,7 +267,7 @@ class APIResource(EmburseObject):
         """
 
         response, api_key = self.requestor.request(method=method.lower(),
-                                                   url=url, params=params)
+                                                   url_=url_, params=params)
         return response
 
     def as_dict(self):
@@ -373,7 +373,7 @@ class ListableAPIResource(APIResource):
         
         """
         resp = util.json.loads(
-            self.make_request(method='GET', url=self.class_url(), **params))
+            self.make_request(method='GET', url_=self.class_url(), **params))
         return [convert_to_emburse_object(v, self.auth_token,
                                           klass_name=self.class_name()) for v in
                 resp.get(self.class_name_plural(), [])]
@@ -444,7 +444,7 @@ class CreateableAPIResource(APIResource):
                     required.get('name')].as_dict()
         return self.construct_from(
             values=util.json.loads(
-                self.make_request(method='post', url=self.class_url(),
+                self.make_request(method='post', url_=self.class_url(),
                                   **params)),
             auth_token=self.auth_token
         )
@@ -490,7 +490,7 @@ class UpdateableAPIResource(APIResource):
                 param_copy[param_name] = param_value.as_dict()
         self.refresh_from(
             resp=util.json.loads(
-                self.make_request(method='put', url=self.instance_url(),
+                self.make_request(method='put', url_=self.instance_url(),
                                   **param_copy)),
         )
         return self
@@ -525,7 +525,7 @@ class DeletableAPIResource(APIResource):
                 ('ID: is a required property and must be set to delete this ' 
                  'resource!')
             )
-        self.make_request(method='delete', url=self.instance_url())
+        self.make_request(method='delete', url_=self.instance_url())
         return self
 
 
@@ -785,9 +785,24 @@ class SharedLink(ListableAPIResource, CreateableAPIResource,
     
     """
 
+    @property
+    def required_create_params(self):
+        """
+        Required Create Params, params required by the api to create a new
+        resource.
+
+        Returns:
+            A list of dictionaries in the format of 
+            {'name': param_name, 'type': param_type} 
+
+        """
+        return [
+            {'name': 'card', 'type': str}
+        ]
+
     @classmethod
     def class_name(cls):
-        return 'shared-links'
+        return 'shared-link'
 
 
 class Statement(ListableAPIResource):
@@ -798,8 +813,122 @@ class Statement(ListableAPIResource):
     
     """
 
-    def export(self):
-        pass
+    #: Constant for comma separated value format file
+    CSV_FORMAT = 'csv'
+
+    #: Constant for portable document format file
+    PDF_FORMAT = 'pdf'
+
+    #: Constant for open financial exchange format file
+    OXF_FORMAT = 'oxf'
+
+    def export(self, start_date=None, end_date=None, file_format=None):
+        """
+        Export, method to export the bank statement for the account in a
+        optional date range. If no file format is given, will default to csv
+        format. If no start date given will default to first of the month. If
+        end date is not given will default to today.
+
+        Args:
+            start_date (datetime): Optional start of date range for statement
+
+            end_date (datetime): Optional end of date range for bank statement
+
+            file_format (str): Optional file format for the bank statement 
+
+        Returns:
+            The file contents in the requested format.
+
+        Raises:
+            error.EmburseValueError if account_id is not set.
+
+            error.EmburseTypeError if start_date or end_date are not of type
+            datetime.
+
+        """
+        valid_formats = [
+            Statement.CSV_FORMAT,
+            Statement.PDF_FORMAT,
+            Statement.OXF_FORMAT
+        ]
+        account_id = getattr(self, 'account_id', None)
+        params = {}
+        if not account_id:
+            raise error.EmburseValueError(
+                'Account id must be set before calling method!'
+            )
+        if file_format not in valid_formats:
+            file_format = Statement.CSV_FORMAT
+        if start_date and not isinstance(start_date, datetime.datetime):
+            raise error.EmburseTypeError(
+                'Start date must be of type  datetime, {0} was given!'.format(
+                    type(end_date)
+                )
+            )
+        if end_date and not isinstance(end_date, datetime.datetime):
+            raise error.EmburseTypeError(
+                'End date must be of type datetime, {0} was given!'.format(
+                    type(end_date)
+                )
+            )
+        if start_date:
+            params['start_date'] = start_date
+        if end_date:
+            params['end_date'] = end_date
+        url = '/accounts/{acc_id}/statement.{fmt}'.format(
+            acc_id=account_id,
+            fmt=file_format
+        )
+        resp = self.make_request(method='GET', url_=url, params=params)
+        return resp
+
+    def as_dict(self):
+        """
+        As Dict, is not implemented by this resource
+
+        Returns:
+            Never returns anything
+
+        Raises:
+            error.EmburseNotImplementedError
+
+        """
+        raise error.EmburseNotImplementedError(
+            'Method not supported by this resource!'
+        )
+
+    def refresh(self):
+        """
+        Refresh, is not implemented by this resource
+
+        Returns:
+            Never returns anything
+
+        Raises:
+            error.EmburseNotImplementedError
+
+        """
+        raise error.EmburseNotImplementedError(
+            'Method not supported by this resource!'
+        )
+
+    def retrieve(self, identifier):
+        """
+        Retrieve,, is not implemented by this resource
+
+        Args:
+            identifier (str): ID of the resource. 
+
+        Returns:
+            Never returns anything
+
+        Raises:
+            error.EmburseNotImplementedError
+
+        """
+        raise error.EmburseNotImplementedError(
+            'Method not supported by this resource!'
+        )
 
 
 class Transaction(ListableAPIResource, UpdateableAPIResource):

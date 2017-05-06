@@ -18,9 +18,9 @@ class Requestor(object):
         self._client = client or http_client.new_default_http_client(
             verify_ssl_certs=verify_ssl_certs, proxy=proxy)
 
-    def request(self, method, url, params=None, headers=None):
+    def request(self, method, url_, params=None, headers=None):
         resp_body, resp_code, resp_headers, my_api_key = self.request_raw(
-            method.lower(), url, params, headers)
+            method.lower(), url_, params, headers)
         resp = self.interpret_response(resp_body, resp_code, resp_headers)
         return resp, my_api_key
 
