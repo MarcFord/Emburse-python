@@ -64,7 +64,7 @@ class Requestor(object):
 
         abs_url = '{base}{passed}'.format(base=self.api_base, passed=url)
 
-        encoded_params = urllib.urlencode(list(self.api_encode(params or {})))
+        encoded_params = util.urlencode(list(self.api_encode(params or {})))
 
         if method == 'get' or method == 'delete':
             if params:
@@ -164,7 +164,7 @@ class Requestor(object):
         :return: Encoded values
         """
         d = {}
-        for sub_key, sub_value in data.iteritems():
+        for sub_key, sub_value in data.items():
             d[fmt.format(key, sub_key)] = sub_value
         return d
 
@@ -175,7 +175,7 @@ class Requestor(object):
         :return: Encoded Data set (key, value)
         :rtype: set
         """
-        for key, value in data.iteritems():
+        for key, value in data.items():
             key = util.utf8(key)
             if value is None:
                 yield (key, 'null')
