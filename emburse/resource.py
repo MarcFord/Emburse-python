@@ -33,7 +33,7 @@ def convert_to_emburse_object(resp, auth_token, klass_name=None):
         'label': Label,
         'location': Location,
         'member': Member,
-        'shared_link': SharedLink,
+        'sharedlink': SharedLink,
         'statement': Statement,
         'transaction': Transaction,
     }
@@ -44,6 +44,7 @@ def convert_to_emburse_object(resp, auth_token, klass_name=None):
     elif isinstance(resp, dict) and not isinstance(resp, APIResource):
         resp = resp.copy()
         if isinstance(klass_name, str):
+            klass_name = re.sub('[^a-zA-Z]', '', klass_name)
             klass = types.get(klass_name, APIResource)
         else:
             klass = APIResource
@@ -373,10 +374,13 @@ class ListableAPIResource(APIResource):
         
         """
         resp = util.json.loads(
-            self.make_request(method='GET', url_=self.class_url(), **params))
-        return [convert_to_emburse_object(v, self.auth_token,
-                                          klass_name=self.class_name()) for v in
-                resp.get(self.class_name_plural(), [])]
+            self.make_request(method='GET', url_=self.class_url(), **params)
+        )
+        return convert_to_emburse_object(
+            resp=resp.get(self.class_name_plural(), []),
+            auth_token=self.auth_token,
+            klass_name=self.class_name()
+        )
 
 
 class CreateableAPIResource(APIResource):
