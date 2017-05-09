@@ -1,4 +1,4 @@
-# Emburse Python Library [![Build Status](https://travis-ci.org/TheNixNinja/Emburse-python.svg?branch=master)](https://travis-ci.org/TheNixNinja/Emburse-python)
+# Emburse Python Library [![Build Status](https://travis-ci.org/MarcFord/Emburse-python.svg?branch=master)](https://travis-ci.org/MarcFord/Emburse-python)
 
 The Emburse Python library provides easy access to the Emburse API for applications written in the Python language. 
 
