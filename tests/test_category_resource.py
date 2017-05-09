@@ -1,7 +1,6 @@
 import pytest
 import datetime
 import uuid
-import json
 from random import randint
 from pytest_mock import mocker
 from emburse.client import Client, Category
@@ -52,7 +51,7 @@ def test_category_details(mocker, enburse_client, category_dict):
     assert isinstance(category, Category)
     category.id = "ce0693b7-53dd-47cf-b145-dfaa6c9f7c00"
     mocker.patch.object(category, 'make_request')
-    category.make_request.return_value = json.dumps(category_dict)
+    category.make_request.return_value = category_dict
     category = category.refresh()
     assert isinstance(category, Category)
     assert category.name == "Office Expenses"
@@ -63,7 +62,7 @@ def test_category_list(mocker, enburse_client, category_list_dict):
     category = enburse_client.Category
     assert isinstance(category, Category)
     mocker.patch.object(category, 'make_request')
-    category.make_request.return_value = json.dumps({'categories': category_list_dict})
+    category.make_request.return_value = {'categories': category_list_dict}
     category_list = category.list()
     assert isinstance(category_list, list)
     assert len(category_list) == 10
@@ -79,7 +78,7 @@ def test_category_create(mocker, enburse_client, category_dict):
     }
     category = enburse_client.Category
     mocker.patch.object(category, 'make_request')
-    category.make_request.return_value = json.dumps(category_dict)
+    category.make_request.return_value = category_dict
     new_cat = category.create(**new_category_data)
     assert isinstance(new_cat, Category)
     assert new_cat.code == 1002
@@ -96,7 +95,7 @@ def test_category_update(mocker, enburse_client, category_dict):
         **cat_data
     )
     mocker.patch.object(category, 'make_request')
-    category.make_request.return_value = json.dumps(updated_cat)
+    category.make_request.return_value = updated_cat
     category.update(**cat_update_data)
     assert isinstance(category, Category)
     assert category.code == cat_update_data['code']

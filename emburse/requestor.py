@@ -88,7 +88,7 @@ class Requestor(object):
         abs_url = '{base}{passed}'.format(base=self.api_base, passed=url)
 
         if method == 'get' or method == 'delete':
-            encoded_params = urllib.urlencode(
+            encoded_params = util.urlencode(
                 list(self.api_encode(params or {}))
             )
             if params:

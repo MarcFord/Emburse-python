@@ -1,7 +1,6 @@
 import pytest
 import datetime
 import uuid
-import json
 from random import randint
 from pytest_mock import mocker
 from emburse.client import Client, Transaction, Card, Member, Category
@@ -108,7 +107,7 @@ def test_department_details(mocker, emburse_client, transaction_dict):
     assert isinstance(transaction, Transaction)
     transaction.id = transaction_dict.get('id')
     mocker.patch.object(transaction, 'make_request')
-    transaction.make_request.return_value = json.dumps(transaction_dict)
+    transaction.make_request.return_value = transaction_dict
     transaction = transaction.refresh()
     assert isinstance(transaction, Transaction)
     assert transaction.amount == -119.21
@@ -122,7 +121,7 @@ def test_department_list(mocker, emburse_client, transaction_list):
     transaction = emburse_client.Transaction
     assert isinstance(transaction, Transaction)
     mocker.patch.object(transaction, 'make_request')
-    transaction.make_request.return_value = json.dumps({'transactions': transaction_list})
+    transaction.make_request.return_value = {'transactions': transaction_list}
     transactions = transaction.list()
     assert isinstance(transactions, list)
     assert len(transactions) == 10
@@ -152,7 +151,7 @@ def test_department_update(mocker, emburse_client, transaction_dict):
         **tran_data
     )
     mocker.patch.object(transaction, 'make_request')
-    transaction.make_request.return_value = json.dumps(updated_tran)
+    transaction.make_request.return_value = updated_tran
     transaction.update(**{'category': tran_update_data})
     assert isinstance(transaction, Transaction)
     assert isinstance(transaction.category, Category)

@@ -1,7 +1,6 @@
 import pytest
 import datetime
 import uuid
-import json
 from dateutil.parser import parse as date_parser
 from random import randint
 from pytest_mock import mocker
@@ -47,7 +46,7 @@ def test_shared_link_details(mocker, emburse_client, shared_link_dict):
     assert isinstance(link, SharedLink)
     link.id = shared_link_dict.get('id')
     mocker.patch.object(link, 'make_request')
-    link.make_request.return_value = json.dumps(shared_link_dict)
+    link.make_request.return_value = shared_link_dict
     link = link.refresh()
     assert isinstance(link, SharedLink)
     for key, value in shared_link_dict.items():
@@ -67,7 +66,7 @@ def test_shared_link_list(mocker, emburse_client, shared_link_list):
     link = emburse_client.SharedLink
     assert isinstance(link, SharedLink)
     mocker.patch.object(link, 'make_request')
-    link.make_request.return_value = json.dumps({'shared-links': shared_link_list})
+    link.make_request.return_value = {'shared-links': shared_link_list}
     links = link.list()
     assert isinstance(links, list)
     assert len(links) == 10
@@ -98,7 +97,7 @@ def test_shared_link_create(mocker, emburse_client):
     }
     link = emburse_client.SharedLink
     mocker.patch.object(link, 'make_request')
-    link.make_request.return_value = json.dumps(new_link_data)
+    link.make_request.return_value = new_link_data
     link = link.create(**new_link_data)
     assert isinstance(link, SharedLink)
     for key, value in new_link_data.items():

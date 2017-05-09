@@ -1,7 +1,6 @@
 import pytest
 import datetime
 import uuid
-import json
 from random import randint
 from dateutil.parser import parse as date_parser
 from pytest_mock import mocker
@@ -59,7 +58,7 @@ def test_location_details(mocker, emburse_client, location_dict):
     assert isinstance(location, Location)
     location.id = location_dict.get('id')
     mocker.patch.object(location, 'make_request')
-    location.make_request.return_value = json.dumps(location_dict)
+    location.make_request.return_value = location_dict
     location = location.refresh()
     assert isinstance(location, Location)
     assert isinstance(location.created_at, datetime.datetime)
@@ -80,7 +79,7 @@ def test_location_list(mocker, emburse_client, location_list):
     location = emburse_client.Location
     assert isinstance(location, Location)
     mocker.patch.object(location, 'make_request')
-    location.make_request.return_value = json.dumps({'locations': location_list})
+    location.make_request.return_value = {'locations': location_list}
     locations = location.list()
     assert isinstance(locations, list)
     assert len(locations) == 10
@@ -110,7 +109,7 @@ def test_location_update(mocker, emburse_client, location_dict):
         **loc_data
     )
     mocker.patch.object(location, 'make_request')
-    location.make_request.return_value = json.dumps(updated_loc_dict)
+    location.make_request.return_value = updated_loc_dict
     location.update(**loc_update_data)
     assert isinstance(location, Location)
     assert isinstance(location.created_at, datetime.datetime)
@@ -137,7 +136,7 @@ def test_location_create(mocker, emburse_client):
     }
     location = emburse_client.Location
     mocker.patch.object(location, 'make_request')
-    location.make_request.return_value = json.dumps(new_label)
+    location.make_request.return_value = new_label
     location = location.create(**{'name': new_label['name']})
     assert isinstance(location, Location)
     assert isinstance(location.created_at, datetime.datetime)

@@ -1,7 +1,6 @@
 import pytest
 import datetime
 import uuid
-import json
 from dateutil.parser import parse as date_parser
 from random import randint, choice
 from pytest_mock import mocker
@@ -60,7 +59,7 @@ def test_allowance_details(mocker, emburse_client, allowance_dict):
     assert isinstance(allowance, Allowance)
     allowance.id = allowance_dict.get('id')
     mocker.patch.object(allowance, 'make_request')
-    allowance.make_request.return_value = json.dumps(allowance_dict)
+    allowance.make_request.return_value = allowance_dict
     allowance = allowance.refresh()
     assert isinstance(allowance, Allowance)
     assert isinstance(allowance.created_at, datetime.datetime)
@@ -77,7 +76,7 @@ def test_allowance_list(mocker, emburse_client, allowance_list):
     allowance = emburse_client.Allowance
     assert isinstance(allowance, Allowance)
     mocker.patch.object(allowance, 'make_request')
-    allowance.make_request.return_value = json.dumps({'allowances': allowance_list})
+    allowance.make_request.return_value = {'allowances': allowance_list}
     allowances = allowance.list()
     assert isinstance(allowances, list)
     assert len(allowances) == 10

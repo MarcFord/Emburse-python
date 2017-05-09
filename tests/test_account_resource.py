@@ -1,7 +1,6 @@
 import pytest
 import datetime
 import uuid
-import json
 import string
 from random import randint, choice
 from dateutil.parser import parse as date_parser
@@ -54,7 +53,7 @@ def test_account_details(mocker, emburse_client, account_dict):
     assert isinstance(account, Account)
     account.id = account_dict.get('id')
     mocker.patch.object(account, 'make_request')
-    account.make_request.return_value = json.dumps(account_dict)
+    account.make_request.return_value = account_dict
     account = account.refresh()
     assert isinstance(account, Account)
     assert isinstance(account.created_at, datetime.datetime)
@@ -70,7 +69,7 @@ def test_account_list(mocker, emburse_client, account_list):
     account = emburse_client.Account
     assert isinstance(account, Account)
     mocker.patch.object(account, 'make_request')
-    account.make_request.return_value = json.dumps({'accounts': account_list})
+    account.make_request.return_value = {'accounts': account_list}
     accounts = account.list()
     assert isinstance(accounts, list)
     assert len(accounts) == 10

@@ -1,7 +1,6 @@
 import pytest
 import datetime
 import uuid
-import json
 from pytest_mock import mocker
 from emburse.client import Client, Department
 
@@ -55,7 +54,7 @@ def test_department_details(mocker, emburse_client, department_dict):
     assert isinstance(department, Department)
     department.id = "5f93e176-7064-46dd-b517-cf1a8454d0f1"
     mocker.patch.object(department, 'make_request')
-    department.make_request.return_value = json.dumps(department_dict)
+    department.make_request.return_value = department_dict
     department = department.refresh()
     assert isinstance(department, Department)
     assert department.name == "Finance"
@@ -67,7 +66,7 @@ def test_department_list(mocker, emburse_client, department_list):
     department = emburse_client.Department
     assert isinstance(department, Department)
     mocker.patch.object(department, 'make_request')
-    department.make_request.return_value = json.dumps({'departments': department_list})
+    department.make_request.return_value = {'departments': department_list}
     departments = department.list()
     assert isinstance(departments, list)
     assert len(departments) == 10
@@ -83,7 +82,7 @@ def test_department_create(mocker, emburse_client, department_dict):
     department_dict['name'] = new_department_data['name']
     department = emburse_client.Department
     mocker.patch.object(department, 'make_request')
-    department.make_request.return_value = json.dumps(department_dict)
+    department.make_request.return_value = department_dict
     new_dep = department.create(**new_department_data)
     assert isinstance(new_dep, Department)
     assert new_dep.name == new_department_data['name']
@@ -99,7 +98,7 @@ def test_department_update(mocker, emburse_client, department_dict):
         **dep_data
     )
     mocker.patch.object(department, 'make_request')
-    department.make_request.return_value = json.dumps(updated_dep)
+    department.make_request.return_value = updated_dep
     department.update(**dep_update_data)
     assert isinstance(department, Department)
     assert department.name == dep_update_data['name']

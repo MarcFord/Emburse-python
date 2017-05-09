@@ -192,8 +192,7 @@ class APIResource(EmburseObject):
         
         """
         return self.refresh_from(
-            util.json.loads(
-                self.make_request(method='GET', url_=self.instance_url()))
+            self.make_request(method='GET', url_=self.instance_url())
         )
 
     def refresh_from(self, resp):
@@ -267,8 +266,12 @@ class APIResource(EmburseObject):
         
         """
 
-        response, api_key = self.requestor.request(method=method.lower(),
-                                                   url_=url_, params=params)
+        response, api_key = self.requestor.request(
+            method=method.lower(),
+            url_=url_,
+            params=params
+        )
+
         return response
 
     def as_dict(self):
@@ -373,9 +376,8 @@ class ListableAPIResource(APIResource):
             A list of resource objects.
         
         """
-        resp = util.json.loads(
-            self.make_request(method='GET', url_=self.class_url(), **params)
-        )
+        resp = self.make_request(method='GET', url_=self.class_url(), **params)
+
         return convert_to_emburse_object(
             resp=resp.get(self.class_name_plural(), []),
             auth_token=self.auth_token,
@@ -497,9 +499,11 @@ class UpdateableAPIResource(APIResource):
             if isinstance(param_value, APIResource):
                 param_copy[param_name] = param_value.as_dict()
         self.refresh_from(
-            resp=util.json.loads(
-                self.make_request(method='put', url_=self.instance_url(),
-                                  **param_copy)),
+            resp=self.make_request(
+                method='put',
+                url_=self.instance_url(),
+                **param_copy
+            ),
         )
         return self
 

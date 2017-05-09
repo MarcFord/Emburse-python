@@ -1,7 +1,6 @@
 import pytest
 import datetime
 import uuid
-import json
 from random import randint
 from dateutil.parser import parse as date_parser
 from pytest_mock import mocker
@@ -57,7 +56,7 @@ def test_label_details(mocker, emburse_client, label_dict):
     assert isinstance(label, Label)
     label.id = label_dict.get('id')
     mocker.patch.object(label, 'make_request')
-    label.make_request.return_value = json.dumps(label_dict)
+    label.make_request.return_value = label_dict
     label = label.refresh()
     assert isinstance(label, Label)
     assert isinstance(label.created_at, datetime.datetime)
@@ -78,7 +77,7 @@ def test_label_list(mocker, emburse_client, label_list):
     label = emburse_client.Label
     assert isinstance(label, Label)
     mocker.patch.object(label, 'make_request')
-    label.make_request.return_value = json.dumps({'labels': label_list})
+    label.make_request.return_value = {'labels': label_list}
     labels = label.list()
     assert isinstance(labels, list)
     assert len(labels) == 10
@@ -108,7 +107,7 @@ def test_label_update(mocker, emburse_client, label_dict):
         **lab_data
     )
     mocker.patch.object(label, 'make_request')
-    label.make_request.return_value = json.dumps(updated_lab_dict)
+    label.make_request.return_value = updated_lab_dict
     label.update(**lab_update_data)
     assert isinstance(label, Label)
     assert isinstance(label.created_at, datetime.datetime)
@@ -135,7 +134,7 @@ def test_label_create(mocker, emburse_client):
     }
     label = emburse_client.Label
     mocker.patch.object(label, 'make_request')
-    label.make_request.return_value = json.dumps(new_label)
+    label.make_request.return_value = new_label
     label = label.create(**{'name': new_label['name']})
     assert isinstance(label, Label)
     assert isinstance(label.created_at, datetime.datetime)

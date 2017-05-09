@@ -1,6 +1,5 @@
 import pytest
 import datetime
-import json
 from dateutil.parser import parse as date_parser
 from pytest_mock import mocker
 from emburse.client import Client, Company
@@ -35,7 +34,7 @@ def test_company_details(mocker, emburse_client, company_dict):
     assert isinstance(company, Company)
     company.id = company_dict.get('id')
     mocker.patch.object(company, 'make_request')
-    company.make_request.return_value = json.dumps(company_dict)
+    company.make_request.return_value = company_dict
     company = company.refresh()
     assert isinstance(company, Company)
     assert isinstance(company.created_at, datetime.datetime)
