@@ -583,7 +583,6 @@ class Allowance(ListableAPIResource):
 
         """
         return [
-            {'name': 'interval', 'type': str},
             {'name': 'amount', 'type': float},
             {'name': 'transaction_limit', 'type': float}
         ]
@@ -641,6 +640,8 @@ class Allowance(ListableAPIResource):
             if isinstance(params.get(required.get('name')), APIResource):
                 params[required.get('name')] = params[
                     required.get('name')].as_dict()
+        if 'interval' not in params.keys():
+            params['interval'] = None
         return self.construct_from(
             values=params,
             auth_token=self.auth_token

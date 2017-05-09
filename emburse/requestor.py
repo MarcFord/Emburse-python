@@ -64,20 +64,19 @@ class Requestor(object):
 
         abs_url = '{base}{passed}'.format(base=self.api_base, passed=url)
 
-        encoded_params = util.urlencode(list(self.api_encode(params or {})))
-
         if method == 'get' or method == 'delete':
+            encoded_params = urllib.urlencode(
+                list(self.api_encode(params or {}))
+            )
             if params:
                 abs_url = self.build_api_url(abs_url, encoded_params)
             post_data = None
         elif method == 'post':
             if not supplied_headers:
                 supplied_headers = {'Content-Type': 'application/json'}
-            else:
-                post_data = encoded_params
+            post_data = util.json.dumps(self.api_encode_post(params or {}))
         else:
-            raise error.EmburseAPIConnectionError(
-                'Unrecognized HTTP method %r'.format(method))
+            raise error.EmburseAPIConnectionError('Unrecognized HTTP method {0}'.format(method))
 
         ua = {
             'bindings_version': version.VERSION,
@@ -85,8 +84,7 @@ class Requestor(object):
             'publisher': 'pigeonly',
             'httplib': self._client.name,
         }
-        for attr, func in [['lang_version', platform.python_version],
-                           ['platform', platform.platform],
+        for attr, func in [['lang_version', platform.python_version], ['platform', platform.platform],
                            ['uname', lambda: ' '.join(platform.uname())]]:
             try:
                 val = func()
@@ -96,8 +94,7 @@ class Requestor(object):
 
         headers = {
             'X-Client-User-Agent': util.json.dumps(ua),
-            'User-Agent': 'Pigeonly Emburse/v1 PythonBindings/{0}'.format(
-                version.VERSION),
+            'User-Agent': 'Pigeonly Emburse/v1 PythonBindings/{0}'.format(version.VERSION),
             'Authorization': 'Token {0}'.format(my_auth_token)
         }
 
@@ -105,15 +102,10 @@ class Requestor(object):
             for key, value in supplied_headers.iteritems():
                 headers[key] = value
 
-        resp_body, resp_code, resp_headers = self._client.request(method,
-                                                                  abs_url,
-                                                                  headers,
-                                                                  post_data)
+        resp_body, resp_code, resp_headers = self._client.request(method, abs_url, headers, post_data)
 
         util.logger.info(
-            '{req_method} {req_url} {code}'.format(req_method=method.upper(),
-                                                   req_url=abs_url,
-                                                   code=resp_code)
+            '{req_method} {req_url} {code}'.format(req_method=method.upper(), req_url=abs_url, code=resp_code)
         )
         util.logger.debug(
             'API request to {req_url} returned (response code, response body) of ({code}, {body})'.format(
@@ -140,6 +132,36 @@ class Requestor(object):
         if not (200 <= resp_code < 300):
             self.handle_api_error(resp_body, resp_code, resp, resp_headers)
         return resp
+
+    def api_encode_post(self, data):
+        """
+        API Encode Post, method to generate post data to be sent to API
+        Args:
+            data (dict): Dictionary of data to be sent to API 
+
+        Returns: A Dictionary of API safe values.
+
+        """
+        params = {}
+        for key, value in data.items():
+            key = util.utf8(key)
+            if value is None:
+                params[key] = None
+                continue
+            elif isinstance(value, list) or isinstance(value, tuple):
+                params[key] = []
+                for sv in value:
+                    params[key].append(self.api_encode_post(sv))
+            elif isinstance(value, dict):
+                params[key] = self.api_encode_post(value)
+            elif isinstance(value, datetime.datetime):
+                params[key] = util.utf8(self.encode_datetime(value))
+            elif isinstance(value, bool):
+                params[key] = value
+            else:
+                params[key] = util.utf8(value)
+
+        return params
 
     def encode_datetime(self, dttime):
         """
