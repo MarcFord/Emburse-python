@@ -19,12 +19,35 @@ class Requestor(object):
             verify_ssl_certs=verify_ssl_certs, proxy=proxy)
 
     def request(self, method, url_, params=None, headers=None):
+        """
+        Request, makes a request to the emburse API
+        Args:
+            method (str): The HTTP method used to send request 
+            url_ (str): The URL to make request to. 
+            params (dict): Params to send to the API 
+            headers (dict): Custom Headers to send to with request. 
+
+        Returns:
+            set (dict, str): Dict of response body and the api key in a set.
+        """
         resp_body, resp_code, resp_headers, my_api_key = self.request_raw(
             method.lower(), url_, params, headers)
         resp = self.interpret_response(resp_body, resp_code, resp_headers)
         return resp, my_api_key
 
     def handle_api_error(self, resp_body, resp_code, resp, resp_headers):
+        """
+        Handle API Error, used to tell what kind of error was sent back from 
+        emburse and raise a valid Exception.
+        Args:
+            resp_body: 
+            resp_code: 
+            resp: 
+            resp_headers: 
+
+        Returns:
+
+        """
         try:
             err = resp['detail']
         except (KeyError, TypeError):

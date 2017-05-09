@@ -263,7 +263,7 @@ class APIResource(EmburseObject):
             **params: The data to send to the API endpoint
         
         Returns:
-            str: Raw response from the API
+            dict: Raw response from the API
         
         """
 
@@ -446,10 +446,14 @@ class CreateableAPIResource(APIResource):
             if isinstance(params.get(required.get('name')), APIResource):
                 params[required.get('name')] = params[
                     required.get('name')].as_dict()
+        resp = self.make_request(
+            method='post',
+            url_=self.class_url(),
+            **params
+        )
+
         return self.construct_from(
-            values=util.json.loads(
-                self.make_request(method='post', url_=self.class_url(),
-                                  **params)),
+            values=resp,
             auth_token=self.auth_token
         )
 
